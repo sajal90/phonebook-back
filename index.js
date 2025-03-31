@@ -59,15 +59,9 @@ app.get("/api/info", (request, response) => {
 });
 
 app.get("/api/persons/:id", (request, response) => {
-	const id = request.params.id;
-
-	const person = persons.find((p) => p.id === id);
-
-	if (person) {
+	Person.findById(request.params.id).then((person) => {
 		response.json(person);
-	} else {
-		response.status(404).end();
-	}
+	});
 });
 
 app.delete("/api/persons/:id", (request, response) => {
