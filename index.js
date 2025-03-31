@@ -93,16 +93,15 @@ app.post("/api/persons", (request, response) => {
 		return response.status(400).json({ error: "duplicate entry" });
 	}
 
-	const person = {
+	const person = new Person({
 		name: data.name,
 		number: data.number,
 		id: String(generateId()),
-	};
+	});
 
-	persons = persons.concat(person);
-	//	console.log(person);
-
-	response.status(201).json(person);
+	person.save().then((p) => {
+		console.log(p);
+	});
 });
 
 const PORT = process.env.PORT;
