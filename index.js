@@ -71,10 +71,6 @@ app.delete("/api/persons/:id", (request, response) => {
 	response.status(204).end();
 });
 
-const generateId = () => {
-	return parseInt(Math.random() * 1000000);
-};
-
 app.post("/api/persons", (request, response) => {
 	const data = request.body;
 
