@@ -29,29 +29,6 @@ const errorHandler = (error, request, response, next) => {
 
 app.use(errorHandler);
 
-let persons = [
-	{
-		"id": "1",
-		"name": "Arto Hellas",
-		"number": "040-123456",
-	},
-	{
-		"id": "2",
-		"name": "Ada Lovelace",
-		"number": "39-44-5323523",
-	},
-	{
-		"id": "3",
-		"name": "Dan Abramov",
-		"number": "12-43-234345",
-	},
-	{
-		"id": "4",
-		"name": "Mary Poppendieck",
-		"number": "39-23-6423122",
-	},
-];
-
 app.get("/api/persons", (request, response) => {
 	Person.find({}).then((person) => {
 		response.json(person);
@@ -60,26 +37,34 @@ app.get("/api/persons", (request, response) => {
 
 app.get("/api/info", (request, response) => {
 	const date = new Date();
-	let data = `<p>Phonebook has info for ${persons.length} people</p>`;
-	data += `<p>${date.toString()}</p>`;
+	Person
+	.countDocuments({})
+	.then(res => {
+		let data = `<p>Phonebook has info for ${res} people</p>`;
+		data += `<p>${date.toString()}</p>`;
 
-	response.send(data);
+		response.send(data);
+	})
 });
 
 app.get("/api/persons/:id", (request, response, next) => {
-	Person.findById(request.params.id).then((person) => {
+	Person
+	.findById(request.params.id)
+	.then((person) => {
 		response.json(person);
 	})
-		.catch((error) => next(error));
+	.catch((error) => next(error));
 });
 
 app.delete("/api/persons/:id", (request, response, next) => {
 	const id = request.params.id;
-	Person.findByIdAndDelete(id).then((res) => {
+	Person
+	.findByIdAndDelete(id)
+	.then((res) => {
 		console.log(res);
 		response.status(204).end();
 	})
-		.catch((error) => next(error));
+	.catch((error) => next(error));
 });
 
 app.post("/api/persons", (request, response) => {
