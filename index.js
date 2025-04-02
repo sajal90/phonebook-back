@@ -21,6 +21,14 @@ app.use(
 	),
 );
 
+const errorHandler = (error, request, response, next) => {
+	console.log(error.message);
+
+	next(error);
+};
+
+app.use(errorHandler);
+
 let persons = [
 	{
 		"id": "1",
@@ -58,18 +66,20 @@ app.get("/api/info", (request, response) => {
 	response.send(data);
 });
 
-app.get("/api/persons/:id", (request, response) => {
+app.get("/api/persons/:id", (request, response, next) => {
 	Person.findById(request.params.id).then((person) => {
 		response.json(person);
-	});
+	})
+		.catch((error) => next(error));
 });
 
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/api/persons/:id", (request, response, next) => {
 	const id = request.params.id;
-	Person.findByIdAndDelete(id).then(res => {
+	Person.findByIdAndDelete(id).then((res) => {
 		console.log(res);
 		response.status(204).end();
 	})
+		.catch((error) => next(error));
 });
 
 app.post("/api/persons", (request, response) => {
@@ -92,6 +102,25 @@ app.post("/api/persons", (request, response) => {
 	person.save().then((p) => {
 		console.log(p);
 	});
+});
+
+app.put("/api/persons/:id", (request, response, next) => {
+	const { name, number } = request.body;
+
+	Person.findById(request.params.id)
+		.then((person) => {
+			if (!person) {
+				response.status(400).end();
+			}
+
+			person.name = name;
+			person.number = number;
+
+			return person.save().then((res) => {
+				response.json(res);
+			});
+		})
+		.catch((error) => next(error));
 });
 
 const PORT = process.env.PORT;
