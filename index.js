@@ -66,9 +66,10 @@ app.get("/api/persons/:id", (request, response) => {
 
 app.delete("/api/persons/:id", (request, response) => {
 	const id = request.params.id;
-	persons = persons.filter((p) => p.id != id);
-
-	response.status(204).end();
+	Person.findByIdAndDelete(id).then(res => {
+		console.log(res);
+		response.status(204).end();
+	})
 });
 
 app.post("/api/persons", (request, response) => {
