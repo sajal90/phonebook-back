@@ -38,33 +38,33 @@ app.get("/api/persons", (request, response) => {
 app.get("/api/info", (request, response) => {
 	const date = new Date();
 	Person
-	.countDocuments({})
-	.then(res => {
-		let data = `<p>Phonebook has info for ${res} people</p>`;
-		data += `<p>${date.toString()}</p>`;
+		.countDocuments({})
+		.then((res) => {
+			let data = `<p>Phonebook has info for ${res} people</p>`;
+			data += `<p>${date.toString()}</p>`;
 
-		response.send(data);
-	})
+			response.send(data);
+		});
 });
 
 app.get("/api/persons/:id", (request, response, next) => {
 	Person
-	.findById(request.params.id)
-	.then((person) => {
-		response.json(person);
-	})
-	.catch((error) => next(error));
+		.findById(request.params.id)
+		.then((person) => {
+			response.json(person);
+		})
+		.catch((error) => next(error));
 });
 
 app.delete("/api/persons/:id", (request, response, next) => {
 	const id = request.params.id;
 	Person
-	.findByIdAndDelete(id)
-	.then((res) => {
-		console.log(res);
-		response.status(204).end();
-	})
-	.catch((error) => next(error));
+		.findByIdAndDelete(id)
+		.then((res) => {
+			console.log(res);
+			response.status(204).end();
+		})
+		.catch((error) => next(error));
 });
 
 app.post("/api/persons", (request, response) => {
