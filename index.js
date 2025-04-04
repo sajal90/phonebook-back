@@ -21,14 +21,6 @@ app.use(
 	),
 );
 
-const errorHandler = (error, request, response, next) => {
-	console.log(error.message);
-
-	next(error);
-};
-
-app.use(errorHandler);
-
 app.get("/api/persons", (request, response) => {
 	Person.find({}).then((person) => {
 		response.json(person);
@@ -67,16 +59,11 @@ app.delete("/api/persons/:id", (request, response, next) => {
 		.catch((error) => next(error));
 });
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
 	const data = request.body;
 
 	if (!data.name || !data.number) {
 		return response.status(400).json({ error: "content missing" });
-	}
-
-	const isDup = persons.find((p) => p.name === data.name);
-	if (isDup) {
-		return response.status(400).json({ error: "duplicate entry" });
 	}
 
 	const person = new Person({
@@ -84,9 +71,12 @@ app.post("/api/persons", (request, response) => {
 		number: data.number,
 	});
 
-	person.save().then((p) => {
-		console.log(p);
-	});
+	person
+		.save()
+		.then((p) => {
+			response.json(p);
+		})
+		.catch((error) => next(error));
 });
 
 app.put("/api/persons/:id", (request, response, next) => {
@@ -107,6 +97,18 @@ app.put("/api/persons/:id", (request, response, next) => {
 		})
 		.catch((error) => next(error));
 });
+
+const errorHandler = (error, request, response, next) => {
+	console.log(error.message);
+
+	if (error.name === "ValidationError") {
+		return response.status(400).json({ error: error.message });
+	}
+
+	next(error);
+};
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 app.listen(PORT);
